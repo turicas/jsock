@@ -33,6 +33,7 @@ MSGTYPE_1 = '\x01'
 #       - whether messages should be signed/unsigned
 #       - whether messages should be encrypted/decrypted
 #       - whether messages should be compressed/decompressed
+# TODO: use msgpack instead of JSON
 
 class ClientSocket(object):
     MSGTYPE = MSGTYPE_0
