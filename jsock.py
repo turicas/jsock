@@ -34,6 +34,8 @@ MSGTYPE_1 = '\x01'
 #       - whether messages should be encrypted/decrypted
 #       - whether messages should be compressed/decompressed
 # TODO: use msgpack instead of JSON
+# TODO: use UDP instead of TCP
+# TODO: should we (try to) use IP multicast?
 
 class ClientSocket(object):
     MSGTYPE = MSGTYPE_0
