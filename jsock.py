@@ -20,7 +20,7 @@
 
 import hashlib
 import hmac
-import json
+import simplejson
 import socket
 import struct
 import zlib
@@ -36,17 +36,20 @@ MSGTYPE_1 = '\x01'
 # TODO: use msgpack instead of JSON
 # TODO: use UDP instead of TCP
 # TODO: should we (try to) use IP multicast?
+# TODO: verify truncated data
 
 class ClientSocket(object):
     MSGTYPE = MSGTYPE_0
 
 
-    def __init__(self, key=None):
+    def __init__(self, key=None, serdes=(simplejson.dumps, simplejson.loads)):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.address = None
         self.key = key
         if key is not None:
             self.MSGTYPE = MSGTYPE_1
+        self.ser = serdes[0]
+        self.des = serdes[1]
 
     def __del__(self):
         self._socket.close()
@@ -58,7 +61,7 @@ class ClientSocket(object):
         self.local_address = self._socket.getsockname()
 
     def send(self, data):
-        json_data = json.dumps(data)
+        json_data = self.ser(data)
         if self.MSGTYPE == MSGTYPE_0:
             compressed = zlib.compress(json_data)
         elif self.MSGTYPE == MSGTYPE_1:
@@ -97,7 +100,7 @@ class ClientSocket(object):
             # unrecognized message type. ignoring
             return
 
-        data = json.loads(json_data)
+        data = self.des(json_data)
         return data
 
     def poll(self):
@@ -114,10 +117,11 @@ class ClientSocket(object):
 
 
 class ServerSocket(object):
-    def __init__(self, key=None):
+    def __init__(self, key=None, serdes=(simplejson.dumps, simplejson.loads)):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.address = None
         self.key = key
+        self.serdes = serdes
 
     def __del__(self):
         self._socket.close()
@@ -135,7 +139,7 @@ class ServerSocket(object):
             return None
 
         new_socket.setblocking(False)
-        result = ClientSocket(key=self.key)
+        result = ClientSocket(key=self.key, serdes=(self.serdes))
         result._socket = new_socket
         result.local_address = new_socket.getsockname()
         result.remote_address = address
