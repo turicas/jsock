@@ -3,7 +3,7 @@
 try:
     import cPickle as pickle  # Python 2
 except ImportError:
-    import pickle
+    import pickle  # noqa
 import json
 import time
 
@@ -14,9 +14,9 @@ import simplejson
 
 def bench(data, times, serializer, deserializer):
     server = jsock.ServerSocket(key="myprecious", serdes=(serializer, deserializer))
-    server.bind(("127.0.0.1", 5554))
+    server.bind("127.0.0.1", 5554)
     client = jsock.ClientSocket(key="myprecious", serdes=(serializer, deserializer))
-    client.connect(("127.0.0.1", 5554))
+    client.connect("127.0.0.1", 5554)
     sclient = server.accept()  # get socket for incoming connection
 
     send = recv = 0
@@ -43,6 +43,7 @@ def bench(data, times, serializer, deserializer):
 
 def print_stats(name, times, send, recv):
     print("      {}: send[{} op/s], recv[{} op/s], total = {}s".format(name, times / send, times / recv, send + recv))
+
 
 data = {"test": 123, "message": "alvaro Justen"}
 # TODO: deal correctly with unicode

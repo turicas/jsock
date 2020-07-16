@@ -5,13 +5,13 @@ import jsock
 server = jsock.ServerSocket(key="myprecious")
 # all messages should be signed (HMAC(key, message, SHA256)) with this key to
 # be accepted. if key is None, no verification will be made
-server.bind(("127.0.0.1", 5555))
+server.bind("127.0.0.1", 5555)
 assert server.accept() is None  # no incoming connection
 print("Server address: {}".format(server.address))
 
 client = jsock.ClientSocket(key="myprecious")
 # should use the same key to sign/verify messages
-client.connect(("127.0.0.1", 5555))
+client.connect("127.0.0.1", 5555)
 print("Client local address: {}".format(client.local_address))
 print("Client remote address (server's): {}".format(client.remote_address))
 assert client.remote_address == server.address

@@ -54,7 +54,7 @@ class ClientSocket(object):
     def __del__(self):
         self._socket.close()
 
-    def connect(self, (ip_address, port)):
+    def connect(self, ip_address, port):
         self._socket.connect((ip_address, port))
         self._socket.setblocking(False)
         self.remote_address = (ip_address, port)
@@ -126,7 +126,7 @@ class ServerSocket(object):
     def __del__(self):
         self._socket.close()
 
-    def bind(self, (ip_address, port), listen=5):
+    def bind(self, ip_address, port, listen=5):
         self.address = (ip_address, port)
         self._socket.bind((ip_address, port))
         self._socket.listen(listen)
