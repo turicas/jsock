@@ -10,13 +10,11 @@ import simplejson
 
 
 def bench(data, times, serializer, deserializer):
-    server = jsock.ServerSocket(key='myprecious', serdes=(serializer,
-        deserializer))
-    server.bind(('127.0.0.1', 5554))
-    client = jsock.ClientSocket(key='myprecious', serdes=(serializer,
-        deserializer))
-    client.connect(('127.0.0.1', 5554))
-    sclient = server.accept() # get socket for incoming connection
+    server = jsock.ServerSocket(key="myprecious", serdes=(serializer, deserializer))
+    server.bind(("127.0.0.1", 5554))
+    client = jsock.ClientSocket(key="myprecious", serdes=(serializer, deserializer))
+    client.connect(("127.0.0.1", 5554))
+    sclient = server.accept()  # get socket for incoming connection
 
     send = recv = 0
     for i in range(times):
@@ -40,22 +38,21 @@ def bench(data, times, serializer, deserializer):
     return send, recv
 
 
-data = {'test': 123, 'message': 'alvaro Justen'}
+def print_stats(name, times, send, recv):
+    print("      {}: send[{} op/s], recv[{} op/s], total = {}s".format(name, times / send, times / recv, send + recv))
+
+data = {"test": 123, "message": "alvaro Justen"}
 # TODO: deal correctly with unicode
 times = 50000
 
 send, recv = bench(data, times, json.dumps, json.loads)
-print '      json: send[{} op/s], recv[{} op/s], total = {}s'\
-        .format(times / send, times / recv, send + recv)
+print_stats("json", times, send, recv)
 
 send, recv = bench(data, times, simplejson.dumps, simplejson.loads)
-print 'simplejson: send[{} op/s], recv[{} op/s], total = {}s'\
-        .format(times / send, times / recv, send + recv)
+print_stats("simplejson", times, send, recv)
 
 send, recv = bench(data, times, msgpack.packb, msgpack.unpackb)
-print '   msgpack: send[{} op/s], recv[{} op/s], total = {}s'\
-        .format(times / send, times / recv, send + recv)
+print_stats("msgpack", times, send, recv)
 
 send, recv = bench(data, times, cPickle.dumps, cPickle.loads)
-print '   cPickle: send[{} op/s], recv[{} op/s], total = {}s'\
-        .format(times / send, times / recv, send + recv)
+print_stats("cPickle", times, send, recv)

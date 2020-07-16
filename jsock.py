@@ -20,15 +20,15 @@
 
 import hashlib
 import hmac
-import simplejson
 import socket
 import struct
 import zlib
 
+import simplejson
 
-__all__ = ['ClientSocket', 'ServerSocket']
-MSGTYPE_0 = '\x00'
-MSGTYPE_1 = '\x01'
+__all__ = ["ClientSocket", "ServerSocket"]
+MSGTYPE_0 = "\x00"
+MSGTYPE_1 = "\x01"
 # TODO: 'message type' bits should have information about:
 #       - whether messages should be signed/unsigned
 #       - whether messages should be encrypted/decrypted
@@ -38,9 +38,9 @@ MSGTYPE_1 = '\x01'
 # TODO: should we (try to) use IP multicast?
 # TODO: verify truncated data
 
+
 class ClientSocket(object):
     MSGTYPE = MSGTYPE_0
-
 
     def __init__(self, key=None, serdes=(simplejson.dumps, simplejson.loads)):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -71,7 +71,7 @@ class ClientSocket(object):
             # unrecognized message type, don't know what to do
             return
 
-        metadata = struct.pack('!ci', self.MSGTYPE, len(compressed))
+        metadata = struct.pack("!ci", self.MSGTYPE, len(compressed))
         return self._socket.sendall(metadata + compressed)
 
     def receive(self):
@@ -80,7 +80,7 @@ class ClientSocket(object):
         except socket.error:
             return
 
-        message_type, length = struct.unpack('!ci', metadata)
+        message_type, length = struct.unpack("!ci", metadata)
         compressed = self._socket.recv(length)
 
         if self.MSGTYPE != message_type:
