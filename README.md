@@ -2,7 +2,12 @@
 
 Key-value-based, HMAC-signed, non-blocking sockets for Python
 
+
 ## Installation
+
+```shell
+pip install jsock
+```
 
 
 ## Usage
