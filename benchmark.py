@@ -1,6 +1,9 @@
 # coding: utf-8
 
-import cPickle
+try:
+    import cPickle as pickle  # Python 2
+except ImportError:
+    import pickle
 import json
 import time
 
