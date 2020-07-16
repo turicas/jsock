@@ -1,3 +1,4 @@
 -r requirements-benchmark.txt
 
 twine
+wheel
