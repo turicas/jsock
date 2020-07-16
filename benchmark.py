@@ -58,5 +58,5 @@ print_stats("simplejson", times, send, recv)
 send, recv = bench(data, times, msgpack.packb, msgpack.unpackb)
 print_stats("msgpack", times, send, recv)
 
-send, recv = bench(data, times, cPickle.dumps, cPickle.loads)
-print_stats("cPickle", times, send, recv)
+send, recv = bench(data, times, pickle.dumps, pickle.loads)
+print_stats("pickle", times, send, recv)
