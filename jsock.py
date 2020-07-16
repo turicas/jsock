@@ -27,8 +27,8 @@ import zlib
 import simplejson
 
 __all__ = ["ClientSocket", "ServerSocket"]
-MSGTYPE_0 = "\x00"
-MSGTYPE_1 = "\x01"
+MSGTYPE_0 = b"\x00"
+MSGTYPE_1 = b"\x01"
 # TODO: 'message type' bits should have information about:
 #       - whether messages should be signed/unsigned
 #       - whether messages should be encrypted/decrypted
@@ -46,8 +46,10 @@ class ClientSocket(object):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.address = None
         self.key = key
+        if isinstance(self.key, str):
+            self.key = self.key.encode("utf-8")
         if key is not None:
-            self.MSGTYPE = MSGTYPE_1
+            self.gSGTYPE = MSGTYPE_1
         self.ser = serdes[0]
         self.des = serdes[1]
 
@@ -62,13 +64,17 @@ class ClientSocket(object):
 
     def send(self, data):
         json_data = self.ser(data)
+        if isinstance(json_data, str):
+            json_data = json_data.encode("utf-8")
+
         if self.MSGTYPE == MSGTYPE_0:
             compressed = zlib.compress(json_data)
         elif self.MSGTYPE == MSGTYPE_1:
             signature = hmac.new(self.key, json_data, hashlib.sha256).digest()
             compressed = zlib.compress(signature + json_data)
         else:
-            # unrecognized message type, don't know what to do
+            # TODO: unrecognized message type, don't know what to do - may
+            # raise a specific exception (and/or add option to ignore)
             return
 
         metadata = struct.pack("!ci", self.MSGTYPE, len(compressed))
